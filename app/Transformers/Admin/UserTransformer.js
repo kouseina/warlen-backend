@@ -20,7 +20,9 @@ class UserTransformer extends TransformerAbstract {
 			id: model.id,
 			name: model.name,
 			surname: model.surname,
-			email: model.email
+			email: model.email,
+			referral_code: model.referral_code,
+			joined_referral_code: model.joined_referral_code
 		}
 	}
 

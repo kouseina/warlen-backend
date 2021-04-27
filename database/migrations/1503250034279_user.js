@@ -12,6 +12,8 @@ class UserSchema extends Schema {
 			table.string('email', 254).notNullable().unique()
 			table.string('password', 60).notNullable()
 			table.integer('image_id').unsigned()
+			table.string('referral_code', 10).unique()
+			table.string('joined_referral_code', 10)
 			table.timestamps()
 		})
 	}

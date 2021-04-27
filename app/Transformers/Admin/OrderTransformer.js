@@ -24,6 +24,8 @@ class OrderTransformer extends TransformerAbstract {
 			id: order.id,
 			status: order.status,
 			invoice_number: order.invoice_number,
+			location: order.location,
+			phone: order.phone,
 			total: order.total ? parseFloat(order.total.toFixed(2)) : 0,
 			date: order.created_at,
 			qty_items: order.__meta__ && order.__meta__.qty_items ? order.__meta__.qty_items : 0,

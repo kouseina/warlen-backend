@@ -22,18 +22,21 @@ class ProductController {
 	 */
 	async index({ request, response, pagination, transform }) {
 		const title = request.input('title')
+		const location_id = request.input('location_id')
 
-		const query = Product.query()
+		let query = Product.query()
 
 		if (title) {
-			query.where('name', 'LIKE', `${title}`)
+			query = query.where('name', 'LIKE', `${title}`)
+		} else if (location_id) {
+			query = query.where('location_id', 'LIKE', `${location_id}`)
 		}
 
 		const products = (await query.paginate(pagination.page, pagination.limit)).toJSON()
 
 		let data = []
 		for (let product of products.data) {
-			let url = 'https://assets.stickpng.com/images/580b57fcd9996e24bc43c31d.png'
+			let url = 'https://www.resepistimewa.com/wp-content/uploads/mie-ayam.jpg'
 			if (product.image_id) {
 				url = (await Image.findOrFail(product.image_id)).toJSON().url
 			}

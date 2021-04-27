@@ -11,6 +11,8 @@ class OrderSchema extends Schema {
 			table.integer('user_id').unsigned()
 			table.enu('status', ['booked', 'ongoing', 'done'])
 			table.uuid('invoice_number').notNullable()
+			table.string('location', 255)
+			table.string('phone', 255)
 			table.timestamps()
 
 			table.foreign('user_id').references('id').inTable('users').onDelete('cascade')

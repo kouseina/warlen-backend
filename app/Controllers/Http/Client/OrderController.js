@@ -55,9 +55,11 @@ class OrderController {
 		const { v4: uuidv4 } = require('uuid')
 		try {
 			const items = request.input('items') // array
+			const location = request.input('location') // array
+			const phone = request.input('phone') // array
 			const client = await auth.getUser()
 			var order = await Order.create(
-				{ user_id: client.id, status: 'booked', invoice_number: uuidv4() },
+				{ user_id: client.id, status: 'booked', location, phone, invoice_number: uuidv4() },
 				trx
 			)
 			const service = new Service(order, trx)

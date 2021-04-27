@@ -20,6 +20,7 @@ const Route = use('Route')
  * Returns the currently logged in user
  */
 Route.get('api/v1/me', 'UserController.me').as('me').middleware('auth')
+Route.post('api/v1/joined', 'UserController.joined').as('joined').middleware('auth')
 /**
  * Imports authentication routes
  */

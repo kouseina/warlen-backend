@@ -11,13 +11,38 @@ class AuthController {
 		try {
 			const { name, surname, email, password, role } = request.all()
 
+			const getRandomString = (length) => {
+				var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+				var result = ''
+				for (var i = 0; i < length; i++) {
+					result += randomChars.charAt(Math.floor(Math.random() * randomChars.length))
+				}
+				return result
+			}
+
+			var resultRandomString = getRandomString(5)
+			const userHasReferralCode = await Database.from('users').where(
+				'referral_code',
+				'LIKE',
+				`%${resultRandomString}%`
+			)
+
+			if (userHasReferralCode.length > 0) {
+				while (resultRandomString === userHasReferralCode[0].referral_code) {
+					resultRandomString = `${getRandomString(5)}`
+				}
+			}
+
 			if (!role.toLowerCase().includes('client') && !role.toLowerCase().includes('courier')) {
 				return response.status(400).send({
 					message: 'Error while registering!'
 				})
 			}
 
-			const user = await User.create({ name, surname, email, password }, trx)
+			const user = await User.create(
+				{ name, surname, email, password, referral_code: resultRandomString },
+				trx
+			)
 			const userRole = await Role.findBy('slug', role.toLowerCase())
 			await user.roles().attach([userRole.id], null, trx)
 			await trx.commit()
@@ -31,7 +56,7 @@ class AuthController {
 		} catch (error) {
 			await trx.rollback()
 			return response.status(400).send({
-				message: 'Error while registering!'
+				message: 'Error while registering!' + error
 			})
 		}
 	}

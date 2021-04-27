@@ -23,6 +23,12 @@ Route.group(() => {
 	 */
 
 	Route.get('images/:id', 'ImageController.show')
+
+	/**
+	 * Location Resource Routes
+	 */
+
+	Route.get('locations', 'LocationController.index')
 })
 	.prefix('api/v1')
 	.namespace('Client')

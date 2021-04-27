@@ -10,11 +10,13 @@ class ProductSchema extends Schema {
 			table.string('name', 200)
 			table.string('image_url', 255)
 			table.integer('image_id').unsigned()
+			table.integer('location_id').unsigned()
 			table.text('description')
 			table.decimal('price', 12, 2)
 			table.timestamps()
 
 			table.foreign('image_id').references('id').inTable('images').onDelete('cascade')
+			table.foreign('location_id').references('id').inTable('locations').onDelete('cascade')
 		})
 
 		this.create('image_product', (table) => {

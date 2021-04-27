@@ -34,6 +34,13 @@ Factory.blueprint('App/Models/Product', (faker) => {
 	return {
 		name: faker.animal(),
 		description: faker.sentence(),
-		price: faker.floating({ min: 0, max: 1000, fixed: 2 })
+		price: faker.integer({ min: 5000, max: 20000 }),
+		location_id: faker.integer({ min: 1, max: 2 })
+	}
+})
+
+Factory.blueprint('App/Models/Location', (faker) => {
+	return {
+		name: faker.country({ full: true })
 	}
 })
