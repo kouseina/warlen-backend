@@ -9,7 +9,7 @@ class AuthController {
 	async register({ request, response }) {
 		const trx = await Database.beginTransaction()
 		try {
-			const { name, surname, email, password, role } = request.all()
+			const { name, surname, email, password, role, joined_referral_code } = request.all()
 
 			const getRandomString = (length) => {
 				var randomChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -26,6 +26,22 @@ class AuthController {
 				'LIKE',
 				`%${resultRandomString}%`
 			)
+			const ifJoinedSameWithReferral = await Database.from('users').where(
+				'referral_code',
+				'LIKE',
+				`%${joined_referral_code}%`
+			)
+
+			if (
+				ifJoinedSameWithReferral.length < 1 &&
+				joined_referral_code !== null &&
+				joined_referral_code !== undefined
+			) {
+				await trx.rollback()
+				return response.status(400).send({
+					message: 'Referral code is wrong!'
+				})
+			}
 
 			if (userHasReferralCode.length > 0) {
 				while (resultRandomString === userHasReferralCode[0].referral_code) {
@@ -40,7 +56,7 @@ class AuthController {
 			}
 
 			const user = await User.create(
-				{ name, surname, email, password, referral_code: resultRandomString },
+				{ name, surname, email, password, referral_code: resultRandomString, joined_referral_code },
 				trx
 			)
 			const userRole = await Role.findBy('slug', role.toLowerCase())

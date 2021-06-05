@@ -11,6 +11,7 @@ const Service = use('App/Services/Order/OrderService')
 const Ws = use('Ws')
 const Coupon = use('App/Models/Coupon')
 const Discount = use('App/Models/Discount')
+const { validate } = use('Validator')
 
 /**
  * Resourceful controller for interacting with orders
@@ -29,15 +30,35 @@ class OrderController {
 		// order number
 		const client = await auth.getUser()
 		const number = request.input('number')
-		let order = await Order.query().where('user_id', client.id).with('items.product').fetch()
+		let order = await Order.query()
+			.where('user_id', client.id)
+			.with('user')
+			.with('items.product')
+			.fetch()
 
 		if (number) {
-			order = await Order.query().where('id', 'LIKE', `${number}`).with('items.product').fetch()
+			order = await Order.query()
+				.where('id', 'LIKE', `${number}`)
+				.with('user')
+				.with('items.product')
+				.fetch()
 		}
 
 		// const results = await query.orderBy('id', 'DESC').paginate(pagination.page, pagination.limit)
 
 		// const orders = await transform.paginate(results, Transformer)
+
+		return response.send(order)
+	}
+
+	async showUsingReferral({ request, response, transform, pagination, auth }) {
+		// order number
+		const client = await auth.getUser()
+		let order = await Order.query()
+			.where('referral_code', client.referral_code)
+			.with('user')
+			.with('items.product')
+			.fetch()
 
 		return response.send(order)
 	}
@@ -53,19 +74,45 @@ class OrderController {
 	async store({ request, response, auth, transform }) {
 		const trx = await Database.beginTransaction()
 		const { v4: uuidv4 } = require('uuid')
+		const rules = {
+			items: 'required',
+			location: 'required',
+			phone: 'required',
+			location_id: 'required'
+		}
 		try {
 			const items = request.input('items') // array
-			const location = request.input('location') // array
-			const phone = request.input('phone') // array
+			const location = request.input('location') // string
+			const phone = request.input('phone') // string
+			const location_id = request.input('location_id') // string
 			const client = await auth.getUser()
+			const validation = await validate(request.all(), rules)
+
+			if (validation.fails()) {
+				return response.status(400).send({
+					message: 'Please fill in all the fields'
+				})
+			}
+
 			var order = await Order.create(
-				{ user_id: client.id, status: 'booked', location, phone, invoice_number: uuidv4() },
+				{
+					user_id: client.id,
+					status: 'booked',
+					location,
+					phone,
+					invoice_number: uuidv4(),
+					location_id,
+					referral_code: client.joined_referral_code
+				},
 				trx
 			)
+
 			const service = new Service(order, trx)
+
 			if (items.length > 0) {
 				await service.syncItems(items)
 			}
+
 			await trx.commit()
 			// instancia os hooks de cálculos dos subtotais
 			order = await Order.find(order.id)

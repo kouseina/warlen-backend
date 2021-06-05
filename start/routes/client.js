@@ -15,6 +15,10 @@ Route.group(() => {
 	 */
 	Route.get('orders', 'OrderController.index').middleware('auth', 'is:( client || admin )')
 	Route.get('orders/:id', 'OrderController.show').middleware('auth', 'is:( client || admin )')
+	Route.get('referral/orders', 'OrderController.showUsingReferral').middleware(
+		'auth',
+		'is:( client || admin )'
+	)
 	Route.post('orders', 'OrderController.store').middleware('auth', 'is:( client )')
 	Route.put('orders/:id', 'OrderController.update').middleware('auth', 'is:( client )')
 

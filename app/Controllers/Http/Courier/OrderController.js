@@ -24,7 +24,7 @@ class OrderController {
 	 * @param { object } ctx.paginate
 	 */
 	async index({ request, response, pagination, transform }) {
-		const { status, id } = request.only(['status', 'id '])
+		const { status, id, location_id } = request.only(['status', 'id', 'location_id'])
 		var order = await Order.query().with('items.product').fetch()
 
 		if (status && id) {
@@ -37,6 +37,11 @@ class OrderController {
 			order = await Order.query().where('status', status).with('items.product').fetch()
 		} else if (id) {
 			order = await Order.query().where('id', 'LIKE', `%${id}%`).with('items.product').fetch()
+		} else if (location_id) {
+			order = await Order.query()
+				.where('location_id', 'LIKE', `${location_id}`)
+				.with('items.product')
+				.fetch()
 		}
 
 		// var orders = await query.paginate(pagination.page, pagination.limit)
