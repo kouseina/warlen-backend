@@ -33,6 +33,7 @@
 		"adonis-acl": "^1.1.1",
 		"adonis-bumblebee": "^2.2.0",
 		"mysql": "^2.18.1",
+		"pg": "^8.7.1",
 		"prettier": "^2.2.1",
 		"url-parse": "^1.5.3",
 		"uuid": "^8.3.2"
@@ -40,7 +41,8 @@
 	"devDependencies": {},
 	"autoload": {
 		"App": "./app"
-	},"engines": {
+	},
+	"engines": {
 		"node": "14.17.0"
 	}
 }
