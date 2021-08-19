@@ -75,7 +75,7 @@ module.exports = {
   */
 	pg: {
 		client: 'pg',
-		// local pg
+		// local
 		// connection: {
 		// 	host: Env.get('DB_HOST', 'localhost'),
 		// 	port: Env.get('DB_PORT', ''),
